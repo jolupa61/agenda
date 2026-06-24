@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
@@ -11,7 +11,8 @@
     <title>Agenda Moleskine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         .font-manuscrit { font-family: "Chalkboard SE", "Comic Sans MS", sans-serif; }
         .font-classique { font-family: "Times New Roman", Georgia, serif; }
         .font-moderne { font-family: system-ui, sans-serif; }
@@ -21,11 +22,11 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-[#242426] text-black antialiased transition-colors duration-300 select-none min-h-full w-full flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]" id="corps-application">
+<body class="bg-[#242426] text-black antialiased flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]" id="corps-application">
 
     <!-- COUVERTURE FERMÉE -->
     <div id="vue-couverture" class="fixed inset-0 flex items-center justify-center p-6 z-50 bg-[#242426]">
-        <button onclick="ouvrirCarnet()" class="w-full max-w-md aspect-[3/4] rounded-2xl relative shadow-2xl flex flex-col items-center justify-between p-8 text-center transition-transform active:scale-95" id="cuir-couverture">
+        <button onclick="ouvrirCarnet()" class="w-full max-w-md aspect-[3/4] rounded-2xl relative shadow-2xl flex flex-col items-center justify-between p-8 text-center" id="cuir-couverture">
             <div class="absolute left-0 top-0 bottom-0 w-6 bg-black/30 rounded-l-2xl border-r border-black/10"></div>
             <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-black/10"></div>
             
@@ -42,8 +43,8 @@
     </div>
 
     <!-- CARNET OUVERT -->
-    <div id="vue-interieur" class="hidden min-h-full w-full flex flex-col p-2 md:p-4">
-        <!-- Barre supérieure d'outils -->
+    <div id="vue-interieur" class="hidden flex-1 flex flex-col p-2 md:p-4 overflow-hidden">
+        <!-- Barre supérieure -->
         <header class="w-full flex justify-between items-center mb-2 px-2 text-white h-10 shrink-0">
             <button onclick="fermerCarnet()" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg font-medium">📁 Fermer</button>
             <div class="flex gap-3" id="selecteur-stylos">
@@ -55,51 +56,48 @@
             <button onclick="ouvrirReglages()" class="text-xl p-1">⚙️</button>
         </header>
 
-        <!-- Container principal -->
-        <main class="w-full flex-1 flex flex-col md:grid md:grid-cols-2 gap-[2px] rounded-xl shadow-2xl relative bg-black/10">
+        <!-- Container principal tactile -->
+        <main id="zone-tactile" class="w-full flex-1 flex flex-col md:grid md:grid-cols-2 gap-[2px] rounded-xl shadow-2xl relative bg-black/10 overflow-hidden">
             
             <!-- Ruban Signet -->
             <div class="hidden md:block absolute left-1/2 -ml-1 top-0 w-2 h-40 z-30 rounded-b-xs shadow-md" id="ruban-signet"></div>
 
             <!-- PAGE GAUCHE : L'AGENDA -->
-            <section class="p-4 lg:p-6 flex flex-col min-h-[420px] md:h-full overflow-hidden" id="page-gauche">
+            <section class="p-4 lg:p-6 flex flex-col h-1/2 md:h-full overflow-hidden" id="page-gauche">
                 <div class="shrink-0">
-                    <!-- En-tête Navigation -->
-                    <div class="flex justify-between items-center mb-3">
+                    <div class="flex justify-between items-center mb-2">
                         <div class="flex items-center gap-2">
                             <h2 class="text-base font-bold font-serif uppercase tracking-wider" id="label-date-ancre">Mardi 24 Juin 2026</h2>
                             <button onclick="allerAujourdhui()" id="btn-today" class="hidden text-[9px] bg-red-600 text-white font-bold px-2 py-0.5 rounded-full uppercase">Auj</button>
                         </div>
                         <div class="flex gap-4 text-sm font-bold p-1">
-                            <button onclick="naviguerDate(-1)" class="px-2 py-1 active:scale-125 transition-transform">◀</button>
-                            <button onclick="naviguerDate(1)" class="px-2 py-1 active:scale-125 transition-transform">▶</button>
+                            <button onclick="naviguerDate(-1)" class="px-2 py-1">◀</button>
+                            <button onclick="naviguerDate(1)" class="px-2 py-1">▶</button>
                         </div>
                     </div>
 
-                    <!-- Onglets de Vues -->
-                    <div class="grid grid-cols-4 gap-1 p-1 bg-black/5 rounded-lg text-center text-xs font-semibold mb-3 shrink-0">
-                        <button onclick="setMode(0)" id="btn-mode-0" class="py-1.5 rounded-md text-gray-500">Jour</button>
-                        <button onclick="setMode(1)" id="btn-mode-1" class="py-1.5 rounded-md text-gray-500">Sem.</button>
-                        <button onclick="setMode(2)" id="btn-mode-2" class="py-1.5 rounded-md text-gray-500">Mois</button>
-                        <button onclick="setMode(3)" id="btn-mode-3" class="py-1.5 rounded-md text-gray-500">Année</button>
+                    <div class="grid grid-cols-4 gap-1 p-1 bg-black/5 rounded-lg text-center text-xs font-semibold mb-2">
+                        <button onclick="setMode(0)" id="btn-mode-0" class="py-1 rounded-md text-gray-500">Jour</button>
+                        <button onclick="setMode(1)" id="btn-mode-1" class="py-1 rounded-md text-gray-500">Sem.</button>
+                        <button onclick="setMode(2)" id="btn-mode-2" class="py-1 rounded-md text-gray-500">Mois</button>
+                        <button onclick="setMode(3)" id="btn-mode-3" class="py-1 rounded-md text-gray-500">Année</button>
                     </div>
 
-                    <!-- Titre Dynamique du Mois -->
-                    <div id="moleskine-titre-mois" class="hidden text-center text-xs lg:text-sm font-serif font-bold tracking-widest uppercase mb-3 opacity-80 shrink-0">
+                    <div id="moleskine-titre-mois" class="hidden text-center text-xs font-serif font-bold tracking-widest uppercase mb-2 opacity-80">
                         JUIN 2026
                     </div>
                 </div>
 
-                <!-- Zone d'affichage dynamique défilante propre -->
-                <div id="moteur-agenda" class="flex-1 overflow-y-auto pr-1 no-scrollbar min-h-0">
+                <!-- Zone d'affichage dynamique défilante -->
+                <div id="moteur-agenda" class="flex-1 overflow-y-auto pr-1 no-scrollbar">
                     <!-- Injecté par JavaScript -->
                 </div>
             </section>
 
             <!-- PAGE DROITE : BLOC NOTES -->
-            <section class="p-4 lg:p-6 flex flex-col min-h-[220px] md:h-full border-t md:border-t-0 md:border-l border-black/5" id="page-droite">
-                <h3 class="text-base italic font-serif opacity-50 mb-2 shrink-0">Notes</h3>
-                <div class="w-full flex-1 relative rounded-lg p-2 min-h-[180px] md:min-h-0" id="box-fond-papier">
+            <section class="p-4 lg:p-6 flex flex-col h-1/2 md:h-full border-t md:border-t-0 md:border-l border-black/5 overflow-hidden" id="page-droite">
+                <h3 class="text-xs italic font-serif opacity-50 mb-1 shrink-0">Notes</h3>
+                <div class="w-full flex-1 relative rounded-lg p-2 overflow-hidden" id="box-fond-papier">
                     <textarea id="zone-notes" oninput="sauverNotes()" class="w-full h-full bg-transparent resize-none border-none outline-none focus:ring-0 p-1" placeholder="Écrire ici..."></textarea>
                 </div>
             </section>
@@ -115,60 +113,47 @@
             </div>
             <div class="space-y-3">
                 <input type="text" id="form-titre" placeholder="Titre" class="w-full bg-[#2c2c2e] px-3 py-2 rounded-lg text-sm outline-none">
-                <input type="text" id="form-lieu" placeholder="Lieu (Optionnel)" class="w-full bg-[#2c2c2e] px-3 py-2 rounded-lg text-sm outline-none">
-                
+                <input type="text" id="form-lieu" placeholder="Lieu" class="w-full bg-[#2c2c2e] px-3 py-2 rounded-lg text-sm outline-none">
                 <div class="flex gap-4">
                     <div class="w-1/2">
-                        <label class="text-xs text-gray-400 block mb-1">Heure Début</label>
+                        <label class="text-xs text-gray-400 block mb-1">Début</label>
                         <input type="time" id="form-debut" class="bg-[#2c2c2e] px-3 py-2 rounded-lg text-sm w-full outline-none">
                     </div>
                     <div class="w-1/2">
-                        <label class="text-xs text-gray-400 block mb-1">Heure Fin</label>
+                        <label class="text-xs text-gray-400 block mb-1">Fin</label>
                         <input type="time" id="form-fin" class="bg-[#2c2c2e] px-3 py-2 rounded-lg text-sm w-full outline-none">
                     </div>
                 </div>
-
                 <div>
-                    <label class="text-xs text-gray-400 block mb-1">Catégorie</label>
                     <div class="flex flex-wrap gap-1.5" id="form-cats">
-                        <button onclick="setFormCat('Pro')" id="cat-Pro" class="px-3 py-1 rounded-full text-xs font-bold border">Pro</button>
-                        <button onclick="setFormCat('Perso')" id="cat-Perso" class="px-3 py-1 rounded-full text-xs font-bold border">Perso</button>
-                        <button onclick="setFormCat('Loisir')" id="cat-Loisir" class="px-3 py-1 rounded-full text-xs font-bold border">Loisir</button>
-                        <button onclick="setFormCat('Médical')" id="cat-Médical" class="px-3 py-1 rounded-full text-xs font-bold border">Médical</button>
-                        <button onclick="setFormCat('Important')" id="cat-Important" class="px-3 py-1 rounded-full text-xs font-bold border">Important</button>
+                        <button onclick="setFormCat('Pro')" id="cat-Pro" class="px-2.5 py-1 rounded-full text-xs font-bold border">Pro</button>
+                        <button onclick="setFormCat('Perso')" id="cat-Perso" class="px-2.5 py-1 rounded-full text-xs font-bold border">Perso</button>
+                        <button onclick="setFormCat('Loisir')" id="cat-Loisir" class="px-2.5 py-1 rounded-full text-xs font-bold border">Loisir</button>
+                        <button onclick="setFormCat('Médical')" id="cat-Médical" class="px-2.5 py-1 rounded-full text-xs font-bold border">Médical</button>
+                        <button onclick="setFormCat('Important')" id="cat-Important" class="px-2.5 py-1 rounded-full text-xs font-bold border">Important</button>
                     </div>
                 </div>
             </div>
             <div class="pt-2 flex gap-2">
-                <button onclick="supprimerRDV()" id="btn-supprimer-rdv" class="hidden bg-red-600 hover:bg-red-700 py-2.5 px-4 rounded-xl font-medium text-sm">🗑️</button>
-                <button onclick="validerRDV()" class="flex-1 bg-blue-600 hover:bg-blue-700 py-2.5 rounded-xl font-bold text-sm text-center">Enregistrer</button>
+                <button onclick="supprimerRDV()" id="btn-supprimer-rdv" class="hidden bg-red-600 py-2.5 px-4 rounded-xl text-sm">🗑️</button>
+                <button onclick="validerRDV()" class="flex-1 bg-blue-600 py-2.5 rounded-xl font-bold text-sm text-center">Enregistrer</button>
             </div>
         </div>
     </div>
 
     <!-- MODALE RÉGLAGES -->
     <div id="modale-reglages" class="fixed inset-0 bg-black/60 z-50 hidden backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-[#1c1c1e] text-white w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto border border-white/10">
-            <div class="flex justify-between items-center border-b border-white/10 pb-3">
-                <h3 class="text-base font-bold">Atelier Moleskine</h3>
+        <div class="bg-[#1c1c1e] text-white w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[80vh] overflow-y-auto border border-white/10">
+            <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <h3 class="text-base font-bold">Réglages</h3>
                 <button onclick="fermerReglages()" class="text-blue-400 font-bold text-sm p-1">OK</button>
             </div>
             <div class="space-y-2">
-                <label class="text-xs text-gray-400 font-semibold uppercase">Aspect extérieur</label>
                 <select id="reg-couverture" onchange="changeRegrage('couleurCouverture', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="noir">🖤 Noir</option>
                     <option value="rouge">❤️ Rouge</option>
                     <option value="blue">💙 Bleu</option>
                 </select>
-                <select id="reg-ruban" onchange="changeRegrage('couleurRubanSelectionnee', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
-                    <option value="rouge">🔴 Rouge</option>
-                    <option value="or">🟡 Or</option>
-                    <option value="vert">🟢 Vert</option>
-                    <option value="noir">⚫ Noir</option>
-                </select>
-            </div>
-            <div class="space-y-2">
-                <label class="text-xs text-gray-400 font-semibold uppercase">Le Papier</label>
                 <select id="reg-papier" onchange="changeRegrage('stylePapier', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="ligné">📝 Ligné</option>
                     <option value="quadrillé">🔲 Carré</option>
@@ -179,27 +164,11 @@
                     <option value="blanc">🥋 Blanc</option>
                     <option value="kraft">📦 Kraft</option>
                 </select>
-            </div>
-            <div class="space-y-2">
-                <label class="text-xs text-gray-400 font-semibold uppercase">Écriture & Stylo</label>
                 <select id="reg-police" onchange="changeRegrage('stylePoliceNotes', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="manuscrit">✍️ Main</option>
                     <option value="classique">📜 Classique</option>
                     <option value="moderne">📱 Digitale</option>
                 </select>
-                <select id="reg-mine" onchange="changeRegrage('epaisseurStylo', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
-                    <option value="1">Fine</option>
-                    <option value="1.5">Moyenne</option>
-                    <option value="2.5">Feutre</option>
-                </select>
-            </div>
-            <div class="pt-4 border-t border-white/10 space-y-2">
-                <label class="text-xs text-gray-400 font-semibold uppercase block">Données</label>
-                <button onclick="exporterJSON()" class="w-full bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 py-2 rounded-lg text-sm font-medium">Exporter vers Fichiers (JSON)</button>
-                <label class="w-full bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-sm font-medium block text-center cursor-pointer">
-                    Importer depuis Fichiers (JSON)
-                    <input type="file" accept=".json" class="hidden" onchange="importerJSON(this)">
-                </label>
             </div>
         </div>
     </div>
@@ -211,34 +180,30 @@
             teintePapier: localStorage.getItem('teintePapier') || 'pop_ivoire',
             couleurCouverture: localStorage.getItem('couleurCouverture') || 'noir',
             stylePoliceNotes: localStorage.getItem('stylePoliceNotes') || 'manuscrit',
-            epaisseurStylo: localStorage.getItem('epaisseurStylo') || '1',
-            couleurRubanSelectionnee: localStorage.getItem('couleurRubanSelectionnee') || 'rouge',
+            epaisseurStylo: '1.5',
+            couleurRubanSelectionnee: 'rouge',
             couleurStylos: localStorage.getItem('couleurStylos') || 'encre',
             notesSemaine: localStorage.getItem('notesSemaine') || 'Notes :\n- '
         };
 
         let evenements = JSON.parse(localStorage.getItem('moleskine_events')) || [];
-        let carnetOuvert = false;
         let modeAffichage = 2; 
         let dateAncre = new Date();
         let selectedFormCat = "Pro";
         let targetRdvId = null;
 
         const couleursCats = { "Pro": "#3b82f6", "Perso": "#22c55e", "Loisir": "#f97316", "Médical": "#a855f7", "Important": "#ef4444" };
-        const hexRubans = { "rouge": "#b91c1c", "or": "#d4af37", "vert": "#1e5235", "noir": "#262628" };
         const encresStylos = { "encre": "#1c1c1e", "bleu": "#1d4ed8", "vert": "#15803d", "rouge": "#b91c1c" };
 
         function ouvrirCarnet() {
             document.getElementById('vue-couverture').classList.add('hidden');
             document.getElementById('vue-interieur').classList.remove('hidden');
-            carnetOuvert = true;
             syncUI();
         }
 
         function fermerCarnet() {
             document.getElementById('vue-interieur').classList.add('hidden');
             document.getElementById('vue-couverture').classList.remove('hidden');
-            carnetOuvert = false;
         }
 
         function changeRegrage(cle, valeur) {
@@ -261,7 +226,7 @@
         function setMode(m) {
             modeAffichage = m;
             for(let i=0; i<4; i++) {
-                document.getElementById(`btn-mode-${i}`).className = i === m ? "py-1 rounded-md bg-white shadow-xs font-bold text-black" : "py-1 rounded-md text-gray-500";
+                document.getElementById(`btn-mode-${i}`).className = i === m ? "py-1 rounded-md bg-white shadow-sm font-bold text-black text-xs" : "py-1 rounded-md text-gray-500 text-xs";
             }
             renderAgenda();
         }
@@ -281,23 +246,7 @@
 
         function verifierSiFerie(jour, mois, anneeEnCours) {
             const fixes = [[1,1], [1,5], [8,5], [14,7], [15,8], [1,11], [11,11], [25,12]];
-            if (fixes.some(f => f[0] === jour && f[1] === mois)) return true;
-
-            const a = anneeEnCours % 19, b = Math.floor(anneeEnCours / 100), c = anneeEnCours % 100;
-            const h = (19 * a + b - Math.floor(b/4) - Math.floor((b - Math.floor((b + 8)/25) + 1)/3) + 15) % 30;
-            const l = (32 + 2 * (b%4) + 2 * Math.floor(c/4) - h - (c%4)) % 7;
-            const m = Math.floor((a + 11 * h + 22 * l) / 451);
-            const jP = ((h + l - 7 * m + 114) % 31) + 1;
-            const mP = Math.floor((h + l - 7 * m + 114) / 31);
-
-            const dimP = new Date(anneeEnCours, mP - 1, jP);
-            const deltas = [1, 39, 50];
-            for (let d of deltas) {
-                let dateMobile = new Date(dimP);
-                dateMobile.setDate(dateMobile.getDate() + d);
-                if (dateMobile.getDate() === jour && (dateMobile.getMonth() + 1) === mois) return true;
-            }
-            return false;
+            return fixes.some(f => f[0] === jour && f[1] === mois);
         }
 
         function syncUI() {
@@ -305,9 +254,6 @@
             if(settings.couleurCouverture === 'rouge') couverture.className = "w-full max-w-md aspect-[3/4] rounded-2xl relative shadow-2xl flex flex-col items-center justify-between p-8 text-center bg-[#8b1414] text-[#ffd700]";
             else if(settings.couleurCouverture === 'blue') couverture.className = "w-full max-w-md aspect-[3/4] rounded-2xl relative shadow-2xl flex flex-col items-center justify-between p-8 text-center bg-[#152e46] text-[#ffd700]";
             else couverture.className = "w-full max-w-md aspect-[3/4] rounded-2xl relative shadow-2xl flex flex-col items-center justify-between p-8 text-center bg-[#141416] text-[#ccaa66]";
-
-            const ruban = document.getElementById('ruban-signet');
-            if (ruban) ruban.style.backgroundColor = hexRubans[settings.couleurRubanSelectionnee];
 
             const pageG = document.getElementById('page-gauche');
             const pageD = document.getElementById('page-droite');
@@ -317,7 +263,7 @@
             pageG.style.backgroundColor = colorCode;
             pageD.style.backgroundColor = colorCode;
 
-            document.getElementById('box-fond-papier').className = "w-full flex-1 relative rounded-lg p-3 overflow-hidden " + (settings.stylePapier === 'ligné' ? 'papier-ligne' : (settings.stylePapier === 'quadrillé' ? 'papier-quadrille' : ''));
+            document.getElementById('box-fond-papier').className = "w-full flex-1 relative rounded-lg p-2 " + (settings.stylePapier === 'ligné' ? 'papier-ligne' : (settings.stylePapier === 'quadrillé' ? 'papier-quadrille' : ''));
 
             const zoneNotes = document.getElementById('zone-notes');
             zoneNotes.value = settings.notesSemaine;
@@ -326,8 +272,7 @@
             let fontClass = "font-manuscrit";
             if(settings.stylePoliceNotes === 'classique') fontClass = "font-classique";
             else if(settings.stylePoliceNotes === 'moderne') fontClass = "font-moderne";
-            zoneNotes.className = `w-full h-full bg-transparent resize-none border-none outline-none focus:ring-0 p-1 ${fontClass} text-sm md:text-base`;
-            zoneNotes.style.fontWeight = settings.epaisseurStylo === "1.5" ? "600" : (settings.epaisseurStylo === "2.5" ? "800" : "normal");
+            zoneNotes.className = `w-full h-full bg-transparent resize-none border-none outline-none focus:ring-0 p-1 ${fontClass} text-sm`;
 
             const auj = new Date();
             const estAuj = dateAncre.getDate() === auj.getDate() && dateAncre.getMonth() === auj.getMonth() && dateAncre.getFullYear() === auj.getFullYear();
@@ -351,7 +296,6 @@
             const container = document.getElementById('moteur-agenda');
             container.innerHTML = "";
             const couleurEncre = encresStylos[settings.couleurStylos];
-            const couleurRuban = hexRubans[settings.couleurRubanSelectionnee];
 
             if (modeAffichage === 0) {
                 let html = "<div class='space-y-1'>";
@@ -360,14 +304,14 @@
                         let d = new Date(r.date);
                         return d.getDate() === dateAncre.getDate() && d.getMonth() === dateAncre.getMonth() && d.getFullYear() === dateAncre.getFullYear() && r.heureDebut === h;
                     });
-                    html += `<div class="flex items-center gap-3 h-12 border-b border-black/5">
-                        <span class="text-xs font-serif opacity-40 w-12">${String(h).padStart(2, '0')}h00</span>
+                    html += `<div class="flex items-center gap-2 h-10 border-b border-black/5">
+                        <span class="text-[11px] font-serif opacity-40 w-10">${String(h).padStart(2, '0')}h</span>
                         <div class="flex-1 h-full flex items-center">`;
                     if(rdvH.length === 0) {
-                        html += `<button onclick="ouvrirEditeur(${h})" class="w-full h-full text-left text-black/10 hover:text-black/30 font-bold text-sm flex items-center justify-between"><span></span><span>➕</span></button>`;
+                        html += `<button onclick="ouvrirEditeur(${h})" class="w-full h-full text-left text-black/5 text-xs flex items-center justify-between"><span></span><span>+</span></button>`;
                     } else {
                         rdvH.forEach(r => {
-                            html += `<div onclick="ouvrirModif('${r.id}')" class="w-full text-xs md:text-sm font-bold p-2 rounded border-l-4" style="background-color: ${couleursCats[r.categorie]}15; border-color: ${couleursCats[r.categorie]}; color: #1c1c1e">
+                            html += `<div onclick="ouvrirModif('${r.id}')" class="w-full text-xs font-bold p-1 rounded border-l-4" style="background-color: ${couleursCats[r.categorie]}15; border-color: ${couleursCats[r.categorie]}; color: #1c1c1e">
                                 ${r.titre}
                             </div>`;
                         });
@@ -377,7 +321,7 @@
                 container.innerHTML = html + "</div>";
 
             } else if (modeAffichage === 1) {
-                let html = "<div class='space-y-2'>";
+                let html = "<div class='space-y-1'>";
                 let cal = new Date(dateAncre);
                 let jourSem = cal.getDay();
                 cal.setDate(cal.getDate() + (jourSem === 0 ? -6 : 1 - jourSem));
@@ -386,34 +330,23 @@
                         let d = new Date(r.date);
                         return d.getDate() === cal.getDate() && d.getMonth() === cal.getMonth() && d.getFullYear() === cal.getFullYear();
                     });
-                    const estDim = cal.getDay() === 0;
-                    const estFerie = verifierSiFerie(cal.getDate(), cal.getMonth() + 1, cal.getFullYear());
-                    let accentColor = (estDim || estFerie) ? couleurRuban : couleurEncre;
-
-                    html += `<div onclick="redirigerJour('${cal.toISOString()}')" class="p-3.5 rounded-xl flex justify-between items-center bg-black/5 border border-black/5 active:bg-black/10 cursor-pointer">
-                        <div>
-                            <span class="font-serif font-bold text-sm md:text-base" style="color: ${accentColor}">
-                                ${cal.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric' })}
-                            </span>
-                            ${estFerie ? `<span class="ml-2 text-[9px] bg-red-100 text-red-700 font-bold px-1.5 py-0.5 rounded">Férié</span>` : ''}
-                        </div>
-                        ${rdvDuJour.length > 0 ? `<span class="text-xs font-serif bg-black/10 px-2 py-0.5 rounded">${rdvDuJour.length} RDV</span>` : ''}
+                    html += `<div onclick="redirigerJour('${cal.toISOString()}')" class="p-2.5 rounded-lg flex justify-between items-center bg-black/5 border border-black/5">
+                        <span class="font-serif font-bold text-xs" style="color: ${couleurEncre}">
+                            ${cal.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric' })}
+                        </span>
+                        ${rdvDuJour.length > 0 ? `<span class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded">${rdvDuJour.length} rdv</span>` : ''}
                     </div>`;
                     cal.setDate(cal.getDate() + 1);
                 }
                 container.innerHTML = html + "</div>";
 
             } else if (modeAffichage === 2) {
-                let html = `<div class="w-full flex flex-col gap-2 h-full justify-start">`;
-                html += `<div class="grid grid-cols-7 text-center rounded-md p-1.5 shrink-0" style="background-color: ${couleurEncre}10">`;
-                const lettres = ["L", "M", "M", "J", "V", "S", "D"];
-                lettres.forEach(l => {
-                    const estWeekend = (l === "S" || l === "D");
-                    html += `<div class="text-xs md:text-sm font-bold font-serif py-1" style="color: ${estWeekend ? '#ef4444' : couleurEncre}">${l}</div>`;
+                let html = `<div class="w-full flex flex-col gap-1 h-full">`;
+                html += `<div class="grid grid-cols-7 text-center rounded-md p-1" style="background-color: ${couleurEncre}10">`;
+                ["L", "M", "M", "J", "V", "S", "D"].forEach(l => {
+                    html += `<div class="text-[10px] font-bold font-serif" style="color: ${couleurEncre}">${l}</div>`;
                 });
-                html += `</div>`;
-
-                html += `<div class="grid grid-cols-7 gap-1.5 auto-rows-fr">`;
+                html += `</div><div class="grid grid-cols-7 gap-1">`;
                 
                 let anneeEnCours = dateAncre.getFullYear();
                 let moisEnCours = dateAncre.getMonth();
@@ -421,10 +354,7 @@
                 let jourSemainePremier = premierDuMois.getDay();
                 let espaceVide = jourSemainePremier === 0 ? 6 : jourSemainePremier - 1;
 
-                for(let e=0; e<espaceVide; e++) {
-                    html += `<div class="aspect-square"></div>`;
-                }
-
+                for(let e=0; e<espaceVide; e++) { html += `<div></div>`; }
                 let nbrJours = new Date(anneeEnCours, moisEnCours + 1, 0).getDate();
                 let auj = new Date();
 
@@ -434,43 +364,22 @@
                         let d = new Date(r.date);
                         return d.getDate() === j && d.getMonth() === moisEnCours && d.getFullYear() === anneeEnCours;
                     });
-
                     let estAuj = auj.getDate() === j && auj.getMonth() === moisEnCours && auj.getFullYear() === anneeEnCours;
-                    let estDimanche = dateJour.getDay() === 0;
-                    let estFerie = verifierSiFerie(j, moisEnCours + 1, anneeEnCours);
-
-                    let textWeight = (estAuj || estFerie) ? "font-bold" : "font-normal";
-                    let textColor = estAuj ? "#ffffff" : ((estFerie || estDimanche) ? couleurRuban : couleurEncre);
-                    let circleBg = estAuj ? couleurRuban : "transparent";
-                    let boxBg = estFerie ? `${couleurRuban}10` : `${couleurEncre}05`;
-                    let borderColor = estFerie ? `${couleurRuban}33` : `${couleurEncre}10`;
-
-                    html += `<button onclick="redirigerJour('${dateJour.toISOString()}')" class="aspect-square w-full rounded-xl flex flex-col items-center justify-between p-1 border active:scale-95 transition-transform cursor-pointer" style="background-color: ${boxBg}; border-color: ${borderColor};">
-                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-serif ${textWeight}" style="color: ${textColor}; background-color: ${circleBg};">
-                            ${j}
-                        </div>
-                        <div class="w-1.5 h-1.5 rounded-full" style="background-color: ${aRdv ? couleurEncre + 'aa' : 'transparent'}"></div>
+                    
+                    html += `<button onclick="redirigerJour('${dateJour.toISOString()}')" class="aspect-square w-full rounded-lg flex flex-col items-center justify-between p-1 border" style="background-color: ${estAuj ? couleurEncre : 'rgba(0,0,0,0.02)'}; border-color: rgba(0,0,0,0.05);">
+                        <span class="text-xs font-serif font-bold" style="color: ${estAuj ? '#fff' : couleurEncre}">${j}</span>
+                        <div class="w-1 h-1 rounded-full" style="background-color: ${aRdv ? (estAuj ? '#fff' : couleurEncre) : 'transparent'}"></div>
                     </button>`;
                 }
-
-                html += `</div></div>`;
-                container.innerHTML = html;
+                container.innerHTML = html + "</div></div>";
                 
             } else if (modeAffichage === 3) {
-                let html = `<div class="grid grid-cols-3 gap-2">`;
+                let html = `<div class="grid grid-cols-3 gap-1">`;
                 for(let m=0; m<12; m++) {
                     let dMois = new Date(dateAncre.getFullYear(), m, 1);
-                    html += `<div onclick="redirigerMois(${m})" class="bg-black/5 p-1.5 rounded-xl text-left cursor-pointer hover:bg-black/10">
-                        <h4 class="text-[11px] font-bold text-red-700 font-serif mb-1 capitalize text-center">${dMois.toLocaleDateString('fr-FR', {month: 'short'})}</h4>
-                        <div class="grid grid-cols-7 gap-0.5 text-[8px] text-center text-black/40">`;
-                    let decal = (dMois.getDay() + 6) % 7;
-                    for(let e=0; e<decal; e++) { html += `<div></div>`; }
-                    let jInMois = new Date(dateAncre.getFullYear(), m + 1, 0).getDate();
-                    for(let j=1; j<=jInMois; j++) {
-                        let f = verifierSiFerie(j, m+1, dateAncre.getFullYear());
-                        html += `<div style="${f ? 'color: ' + couleurRuban + '; font-weight: bold; background: ' + couleurRuban + '15;' : ''}">${j}</div>`;
-                    }
-                    html += `</div></div>`;
+                    html += `<div onclick="redirigerMois(${m})" class="bg-black/5 p-1 rounded-lg text-center">
+                        <h4 class="text-[10px] font-bold text-red-700 font-serif uppercase">${dMois.toLocaleDateString('fr-FR', {month: 'short'})}</h4>
+                    </div>`;
                 }
                 container.innerHTML = html + "</div>";
             }
@@ -495,11 +404,11 @@
             const r = evenements.find(x => x.id === id);
             if(!r) return;
             targetRdvId = id;
-            document.getElementById('editeur-titre-mode').innerText = "Modifier l'Événement";
+            document.getElementById('editeur-titre-mode').innerText = "Modifier";
             document.getElementById('form-titre').value = r.titre;
-            document.getElementById('form-lieu').value = r.lieu;
-            document.getElementById('form-debut').value = `${String(r.heureDebut).padStart(2,'0')}:${String(r.minuteDebut).padStart(2,'0')}`;
-            document.getElementById('form-fin').value = `${String(r.heureFin).padStart(2,'0')}:${String(r.minuteFin).padStart(2,'0')}`;
+            document.getElementById('form-lieu').value = r.lieu || '';
+            document.getElementById('form-debut').value = `${String(r.heureDebut).padStart(2,'0')}:00`;
+            document.getElementById('form-fin').value = `${String(r.heureFin).padStart(2,'0')}:00`;
             document.getElementById('btn-supprimer-rdv').classList.remove('hidden');
             setFormCat(r.categorie);
             document.getElementById('modale-editeur').style.display = "flex";
@@ -513,39 +422,23 @@
             selectedFormCat = cat;
             ["Pro", "Perso", "Loisir", "Médical", "Important"].forEach(c => {
                 const btn = document.getElementById(`cat-${c}`);
-                if(c === cat) {
-                    btn.className = `px-3 py-1 rounded-full text-xs font-bold border text-white`;
-                    btn.style.backgroundColor = couleursCats[c];
-                    btn.style.borderColor = couleursCats[c];
-                } else {
-                    btn.className = `px-3 py-1 rounded-full text-xs font-bold border`;
-                    btn.style.backgroundColor = "transparent";
-                    btn.style.borderColor = couleursCats[c];
-                    btn.style.color = couleursCats[c];
-                }
+                btn.style.backgroundColor = c === cat ? couleursCats[c] : "transparent";
+                btn.style.color = c === cat ? "#fff" : couleursCats[c];
+                btn.style.borderColor = couleursCats[c];
             });
         }
 
         function validerRDV() {
             const titre = document.getElementById('form-titre').value.trim() || "Sans Titre";
             const lieu = document.getElementById('form-lieu').value.trim();
-            const tDebut = document.getElementById('form-debut').value.split(':');
-            const tFin = document.getElementById('form-fin').value.split(':');
-            const hDeb = parseInt(tDebut[0]) || 9, mDeb = parseInt(tDebut[1]) || 0;
-            const hFin = parseInt(tFin[0]) || 10, mFin = parseInt(tFin[1]) || 0;
+            const hDeb = parseInt(document.getElementById('form-debut').value.split(':')[0]) || 9;
+            const hFin = parseInt(document.getElementById('form-fin').value.split(':')[0]) || 10;
 
             if(targetRdvId) {
                 let match = evenements.find(x => x.id === targetRdvId);
-                if(match) {
-                    match.titre = titre; match.lieu = lieu; match.categorie = selectedFormCat;
-                    match.heureDebut = hDeb; match.minuteDebut = mDeb; match.heureFin = hFin; match.minuteFin = mFin;
-                }
+                if(match) { match.titre = titre; match.lieu = lieu; match.categorie = selectedFormCat; match.heureDebut = hDeb; match.heureFin = hFin; }
             } else {
-                evenements.push({
-                    id: 'uuid_' + Date.now(), date: dateAncre.toISOString(),
-                    heureDebut: hDeb, minuteDebut: mDeb, heureFin: hFin, minuteFin: mFin,
-                    titre, lieu, categorie: selectedFormCat
-                });
+                evenements.push({ id: 'id_' + Date.now(), date: dateAncre.toISOString(), heureDebut: hDeb, heureFin: hFin, titre, lieu, categorie: selectedFormCat });
             }
             localStorage.setItem('moleskine_events', JSON.stringify(evenements));
             fermerEditeur();
@@ -553,7 +446,7 @@
         }
 
         function supprimerRDV() {
-            if(confirm("Supprimer cet événement ?") && targetRdvId) {
+            if(confirm("Supprimer ?") && targetRdvId) {
                 evenements = evenements.filter(x => x.id !== targetRdvId);
                 localStorage.setItem('moleskine_events', JSON.stringify(evenements));
                 fermerEditeur();
@@ -561,62 +454,24 @@
             }
         }
 
-        function exporterJSON() {
-            const packageGlobal = { evenements, notes: settings.notesSemaine };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(packageGlobal, null, 2));
-            const dl = document.createElement('a');
-            dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", "moleskine_backup.json");
-            document.body.appendChild(dl);
-            dl.click();
-            dl.remove();
-        }
+        // --- DÉTECTION DU SWIPE REPENSIE POUR L'IPHONE ---
+        let startX = 0;
+        let startY = 0;
 
-        function importerJSON(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const backup = JSON.parse(e.target.result);
-                    if (backup.evenements) evenements = backup.evenements;
-                    if (backup.notes) { settings.notesSemaine = backup.notes; localStorage.setItem('notesSemaine', backup.notes); }
-                    localStorage.setItem('moleskine_events', JSON.stringify(evenements));
-                    syncUI();
-                    alert("Importation réussie ✓");
-                    fermerReglages();
-                } catch(err) { alert("Fichier JSON invalide."); }
-            };
-            reader.readAsText(file);
-        }
-
-        // --- NOUVEAU SYSTÈME DE GESTE GLOBAL EXTÊMEMENT FIABLE ---
-        let touchstartX = 0;
-        let touchstartY = 0;
-
-        document.addEventListener('touchstart', function(event) {
-            // Si on touche la boîte de saisie des notes, on n'intercepte rien
-            if (event.target.id === 'zone-notes') return;
-            touchstartX = event.changedTouches[0].clientX;
-            touchstartY = event.changedTouches[0].clientY;
+        document.getElementById('zone-tactile').addEventListener('touchstart', function(e) {
+            if (e.target.id === 'zone-notes') return;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
         }, {passive: true});
 
-        document.addEventListener('touchend', function(event) {
-            if (event.target.id === 'zone-notes') return;
-            
-            let touchendX = event.changedTouches[0].clientX;
-            let touchendY = event.changedTouches[0].clientY;
-            
-            let diffX = touchendX - touchstartX;
-            let diffY = touchendY - touchstartY;
+        document.getElementById('zone-tactile').addEventListener('touchend', function(e) {
+            if (e.target.id === 'zone-notes') return;
+            let diffX = e.changedTouches[0].clientX - startX;
+            let diffY = e.changedTouches[0].clientY - startY;
 
-            // Seuil de détection strict (Swipe horizontal uniquement)
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-                if (diffX > 0) {
-                    naviguerDate(-1); // Droite -> Précédent
-                } else {
-                    naviguerDate(1);  // Gauche -> Suivant
-                }
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+                if (diffX > 0) naviguerDate(-1); // Swipe à droite -> page précédente
+                else naviguerDate(1); // Swipe à gauche -> page suivante
             }
         }, {passive: true});
 
