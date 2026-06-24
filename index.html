@@ -2,11 +2,10 @@
 <html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- ICÔNE STANDARD ET SÉCURISÉE -->
     <link class="apple-touch-icon" rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/510/ffffff/journal.png">
     
     <title>Agenda Moleskine</title>
@@ -22,7 +21,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-[#242426] text-black antialiased transition-colors duration-300 select-none min-h-full w-full flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+<body class="bg-[#242426] text-black antialiased transition-colors duration-300 select-none min-h-full w-full flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]" id="corps-application">
 
     <!-- COUVERTURE FERMÉE -->
     <div id="vue-couverture" class="fixed inset-0 flex items-center justify-center p-6 z-50 bg-[#242426]">
@@ -43,7 +42,7 @@
     </div>
 
     <!-- CARNET OUVERT -->
-    <div id="vue-interieur" class="hidden min-h-full w-full flex flex-col p-2 md:p-3">
+    <div id="vue-interieur" class="hidden min-h-full w-full flex flex-col p-2 md:p-4">
         <!-- Barre supérieure d'outils -->
         <header class="w-full flex justify-between items-center mb-2 px-2 text-white h-10 shrink-0">
             <button onclick="fermerCarnet()" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg font-medium">📁 Fermer</button>
@@ -56,19 +55,19 @@
             <button onclick="ouvrirReglages()" class="text-xl p-1">⚙️</button>
         </header>
 
-        <!-- Container principal (Zone tactile de swipe intégrée ici) -->
-        <main class="w-full flex-1 flex flex-col md:grid md:grid-cols-2 gap-[2px] rounded-xl shadow-2xl relative bg-black/10" id="zone-tactile-carnet">
+        <!-- Container principal -->
+        <main class="w-full flex-1 flex flex-col md:grid md:grid-cols-2 gap-[2px] rounded-xl shadow-2xl relative bg-black/10">
             
             <!-- Ruban Signet -->
             <div class="hidden md:block absolute left-1/2 -ml-1 top-0 w-2 h-40 z-30 rounded-b-xs shadow-md" id="ruban-signet"></div>
 
             <!-- PAGE GAUCHE : L'AGENDA -->
-            <section class="p-4 lg:p-6 flex flex-col min-h-[460px] md:h-full overflow-hidden" id="page-gauche">
+            <section class="p-4 lg:p-6 flex flex-col min-h-[420px] md:h-full overflow-hidden" id="page-gauche">
                 <div class="shrink-0">
                     <!-- En-tête Navigation -->
                     <div class="flex justify-between items-center mb-3">
                         <div class="flex items-center gap-2">
-                            <h2 class="text-sm lg:text-base font-bold font-serif uppercase tracking-wider" id="label-date-ancre">Mardi 24 Juin 2026</h2>
+                            <h2 class="text-base font-bold font-serif uppercase tracking-wider" id="label-date-ancre">Mardi 24 Juin 2026</h2>
                             <button onclick="allerAujourdhui()" id="btn-today" class="hidden text-[9px] bg-red-600 text-white font-bold px-2 py-0.5 rounded-full uppercase">Auj</button>
                         </div>
                         <div class="flex gap-4 text-sm font-bold p-1">
@@ -98,9 +97,9 @@
             </section>
 
             <!-- PAGE DROITE : BLOC NOTES -->
-            <section class="p-4 lg:p-6 flex flex-col min-h-[300px] md:h-full border-t md:border-t-0 md:border-l border-black/5" id="page-droite">
+            <section class="p-4 lg:p-6 flex flex-col min-h-[220px] md:h-full border-t md:border-t-0 md:border-l border-black/5" id="page-droite">
                 <h3 class="text-base italic font-serif opacity-50 mb-2 shrink-0">Notes</h3>
-                <div class="w-full flex-1 relative rounded-lg p-2 min-h-[250px] md:min-h-0" id="box-fond-papier">
+                <div class="w-full flex-1 relative rounded-lg p-2 min-h-[180px] md:min-h-0" id="box-fond-papier">
                     <textarea id="zone-notes" oninput="sauverNotes()" class="w-full h-full bg-transparent resize-none border-none outline-none focus:ring-0 p-1" placeholder="Écrire ici..."></textarea>
                 </div>
             </section>
@@ -423,7 +422,7 @@
                 let espaceVide = jourSemainePremier === 0 ? 6 : jourSemainePremier - 1;
 
                 for(let e=0; e<espaceVide; e++) {
-                    html += `<div class="aspect-square max-h-[60px]"></div>`;
+                    html += `<div class="aspect-square"></div>`;
                 }
 
                 let nbrJours = new Date(anneeEnCours, moisEnCours + 1, 0).getDate();
@@ -446,8 +445,8 @@
                     let boxBg = estFerie ? `${couleurRuban}10` : `${couleurEncre}05`;
                     let borderColor = estFerie ? `${couleurRuban}33` : `${couleurEncre}10`;
 
-                    html += `<button onclick="redirigerJour('${dateJour.toISOString()}')" class="aspect-square max-h-[60px] w-full rounded-xl flex flex-col items-center justify-between p-1.5 border active:scale-95 transition-transform cursor-pointer" style="background-color: ${boxBg}; border-color: ${borderColor};">
-                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs md:text-sm font-serif ${textWeight}" style="color: ${textColor}; background-color: ${circleBg};">
+                    html += `<button onclick="redirigerJour('${dateJour.toISOString()}')" class="aspect-square w-full rounded-xl flex flex-col items-center justify-between p-1 border active:scale-95 transition-transform cursor-pointer" style="background-color: ${boxBg}; border-color: ${borderColor};">
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-serif ${textWeight}" style="color: ${textColor}; background-color: ${circleBg};">
                             ${j}
                         </div>
                         <div class="w-1.5 h-1.5 rounded-full" style="background-color: ${aRdv ? couleurEncre + 'aa' : 'transparent'}"></div>
@@ -458,12 +457,12 @@
                 container.innerHTML = html;
                 
             } else if (modeAffichage === 3) {
-                let html = `<div class="grid grid-cols-3 gap-3">`;
+                let html = `<div class="grid grid-cols-3 gap-2">`;
                 for(let m=0; m<12; m++) {
                     let dMois = new Date(dateAncre.getFullYear(), m, 1);
-                    html += `<div onclick="redirigerMois(${m})" class="bg-black/5 p-2 rounded-xl text-left cursor-pointer hover:bg-black/10">
-                        <h4 class="text-xs font-bold text-red-700 font-serif mb-1 capitalize text-center">${dMois.toLocaleDateString('fr-FR', {month: 'short'})}</h4>
-                        <div class="grid grid-cols-7 gap-0.5 text-[7px] md:text-[9px] text-center text-black/40">`;
+                    html += `<div onclick="redirigerMois(${m})" class="bg-black/5 p-1.5 rounded-xl text-left cursor-pointer hover:bg-black/10">
+                        <h4 class="text-[11px] font-bold text-red-700 font-serif mb-1 capitalize text-center">${dMois.toLocaleDateString('fr-FR', {month: 'short'})}</h4>
+                        <div class="grid grid-cols-7 gap-0.5 text-[8px] text-center text-black/40">`;
                     let decal = (dMois.getDay() + 6) % 7;
                     for(let e=0; e<decal; e++) { html += `<div></div>`; }
                     let jInMois = new Date(dateAncre.getFullYear(), m + 1, 0).getDate();
@@ -591,43 +590,35 @@
             reader.readAsText(file);
         }
 
-        // --- CODE DE RECONNAISSANCE DES SWIPES GAUCHE/DROITE ---
+        // --- NOUVEAU SYSTÈME DE GESTE GLOBAL EXTÊMEMENT FIABLE ---
         let touchstartX = 0;
         let touchstartY = 0;
-        let touchendX = 0;
-        let touchendY = 0;
 
-        const zoneTactile = document.getElementById('zone-tactile-carnet');
-
-        zoneTactile.addEventListener('touchstart', function(event) {
-            // Éviter de bloquer le comportement naturel si on tape dans la zone de notes
+        document.addEventListener('touchstart', function(event) {
+            // Si on touche la boîte de saisie des notes, on n'intercepte rien
             if (event.target.id === 'zone-notes') return;
-            touchstartX = event.changedTouches[0].screenX;
-            touchstartY = event.changedTouches[0].screenY;
+            touchstartX = event.changedTouches[0].clientX;
+            touchstartY = event.changedTouches[0].clientY;
         }, {passive: true});
 
-        zoneTactile.addEventListener('touchend', function(event) {
+        document.addEventListener('touchend', function(event) {
             if (event.target.id === 'zone-notes') return;
-            touchendX = event.changedTouches[0].screenX;
-            touchendY = event.changedTouches[0].screenY;
-            analyserGeste();
-        }, {passive: true});
+            
+            let touchendX = event.changedTouches[0].clientX;
+            let touchendY = event.changedTouches[0].clientY;
+            
+            let diffX = touchendX - touchstartX;
+            let diffY = touchendY - touchstartY;
 
-        function analyserGeste() {
-            const distanceX = touchendX - touchstartX;
-            const distanceY = touchendY - touchstartY;
-
-            // On vérifie que le swipe est bien horizontal et pas un scroll vertical (seuil de 60px)
-            if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > 60) {
-                if (distanceX > 0) {
-                    // Swipe vers la droite -> Page précédente
-                    naviguerDate(-1);
+            // Seuil de détection strict (Swipe horizontal uniquement)
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    naviguerDate(-1); // Droite -> Précédent
                 } else {
-                    // Swipe vers la gauche -> Page suivante
-                    naviguerDate(1);
+                    naviguerDate(1);  // Gauche -> Suivant
                 }
             }
-        }
+        }, {passive: true});
 
         setMode(2);
         syncUI();
