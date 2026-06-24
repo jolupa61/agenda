@@ -2,12 +2,12 @@
 <html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- NOUVELLE ICÔNE STANDARD ET SÉCURISÉE (PLUS BESOIN D'IMGBB) -->
-    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/510/ffffff/journal.png">
+    <!-- ICÔNE STANDARD ET SÉCURISÉE -->
+    <link class="apple-touch-icon" rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/510/ffffff/journal.png">
     
     <title>Agenda Moleskine</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,7 +22,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-[#242426] text-black antialiased transition-colors duration-300 select-none h-full w-full overflow-hidden flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+<body class="bg-[#242426] text-black antialiased transition-colors duration-300 select-none min-h-full w-full flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
 
     <!-- COUVERTURE FERMÉE -->
     <div id="vue-couverture" class="fixed inset-0 flex items-center justify-center p-6 z-50 bg-[#242426]">
@@ -43,7 +43,7 @@
     </div>
 
     <!-- CARNET OUVERT -->
-    <div id="vue-interieur" class="hidden h-full w-full flex flex-col p-2 md:p-3">
+    <div id="vue-interieur" class="hidden min-h-full w-full flex flex-col p-2 md:p-3">
         <!-- Barre supérieure d'outils -->
         <header class="w-full flex justify-between items-center mb-2 px-2 text-white h-10 shrink-0">
             <button onclick="fermerCarnet()" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg font-medium">📁 Fermer</button>
@@ -56,14 +56,14 @@
             <button onclick="ouvrirReglages()" class="text-xl p-1">⚙️</button>
         </header>
 
-        <!-- Container principal -->
-        <main class="w-full flex-1 grid grid-cols-1 md:grid-cols-2 gap-[2px] overflow-hidden rounded-xl shadow-2xl relative min-h-0 bg-black/10">
+        <!-- Container principal (Zone tactile de swipe intégrée ici) -->
+        <main class="w-full flex-1 flex flex-col md:grid md:grid-cols-2 gap-[2px] rounded-xl shadow-2xl relative bg-black/10" id="zone-tactile-carnet">
             
             <!-- Ruban Signet -->
             <div class="hidden md:block absolute left-1/2 -ml-1 top-0 w-2 h-40 z-30 rounded-b-xs shadow-md" id="ruban-signet"></div>
 
             <!-- PAGE GAUCHE : L'AGENDA -->
-            <section class="p-4 lg:p-6 flex flex-col h-full min-h-0 overflow-hidden" id="page-gauche">
+            <section class="p-4 lg:p-6 flex flex-col min-h-[460px] md:h-full overflow-hidden" id="page-gauche">
                 <div class="shrink-0">
                     <!-- En-tête Navigation -->
                     <div class="flex justify-between items-center mb-3">
@@ -91,16 +91,16 @@
                     </div>
                 </div>
 
-                <!-- Zone d'affichage dynamique défilante -->
+                <!-- Zone d'affichage dynamique défilante propre -->
                 <div id="moteur-agenda" class="flex-1 overflow-y-auto pr-1 no-scrollbar min-h-0">
                     <!-- Injecté par JavaScript -->
                 </div>
             </section>
 
             <!-- PAGE DROITE : BLOC NOTES -->
-            <section class="p-4 lg:p-6 flex flex-col h-full min-h-0 border-t md:border-t-0 md:border-l border-black/5" id="page-droite">
+            <section class="p-4 lg:p-6 flex flex-col min-h-[300px] md:h-full border-t md:border-t-0 md:border-l border-black/5" id="page-droite">
                 <h3 class="text-base italic font-serif opacity-50 mb-2 shrink-0">Notes</h3>
-                <div class="w-full flex-1 relative rounded-lg p-2 overflow-hidden min-h-0" id="box-fond-papier">
+                <div class="w-full flex-1 relative rounded-lg p-2 min-h-[250px] md:min-h-0" id="box-fond-papier">
                     <textarea id="zone-notes" oninput="sauverNotes()" class="w-full h-full bg-transparent resize-none border-none outline-none focus:ring-0 p-1" placeholder="Écrire ici..."></textarea>
                 </div>
             </section>
@@ -156,12 +156,12 @@
             </div>
             <div class="space-y-2">
                 <label class="text-xs text-gray-400 font-semibold uppercase">Aspect extérieur</label>
-                <select id="reg-couverture" onchange="changeReglage('couleurCouverture', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
+                <select id="reg-couverture" onchange="changeRegrage('couleurCouverture', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="noir">🖤 Noir</option>
                     <option value="rouge">❤️ Rouge</option>
                     <option value="blue">💙 Bleu</option>
                 </select>
-                <select id="reg-ruban" onchange="changeReglage('couleurRubanSelectionnee', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
+                <select id="reg-ruban" onchange="changeRegrage('couleurRubanSelectionnee', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="rouge">🔴 Rouge</option>
                     <option value="or">🟡 Or</option>
                     <option value="vert">🟢 Vert</option>
@@ -170,12 +170,12 @@
             </div>
             <div class="space-y-2">
                 <label class="text-xs text-gray-400 font-semibold uppercase">Le Papier</label>
-                <select id="reg-papier" onchange="changeReglage('stylePapier', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
+                <select id="reg-papier" onchange="changeRegrage('stylePapier', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="ligné">📝 Ligné</option>
                     <option value="quadrillé">🔲 Carré</option>
                     <option value="blanc">📄 Blanc</option>
                 </select>
-                <select id="reg-teinte" onchange="changeReglage('teintePapier', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
+                <select id="reg-teinte" onchange="changeRegrage('teintePapier', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="pop_ivoire">🍦 Ivoire</option>
                     <option value="blanc">🥋 Blanc</option>
                     <option value="kraft">📦 Kraft</option>
@@ -183,12 +183,12 @@
             </div>
             <div class="space-y-2">
                 <label class="text-xs text-gray-400 font-semibold uppercase">Écriture & Stylo</label>
-                <select id="reg-police" onchange="changeReglage('stylePoliceNotes', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
+                <select id="reg-police" onchange="changeRegrage('stylePoliceNotes', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="manuscrit">✍️ Main</option>
                     <option value="classique">📜 Classique</option>
                     <option value="moderne">📱 Digitale</option>
                 </select>
-                <select id="reg-mine" onchange="changeReglage('epaisseurStylo', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
+                <select id="reg-mine" onchange="changeRegrage('epaisseurStylo', this.value)" class="w-full bg-[#2c2c2e] p-2 rounded-lg text-sm outline-none">
                     <option value="1">Fine</option>
                     <option value="1.5">Moyenne</option>
                     <option value="2.5">Feutre</option>
@@ -242,7 +242,7 @@
             carnetOuvert = false;
         }
 
-        function changeReglage(cle, valeur) {
+        function changeRegrage(cle, valeur) {
             settings[cle] = valeur;
             localStorage.setItem(cle, valeur);
             syncUI();
@@ -589,6 +589,44 @@
                 } catch(err) { alert("Fichier JSON invalide."); }
             };
             reader.readAsText(file);
+        }
+
+        // --- CODE DE RECONNAISSANCE DES SWIPES GAUCHE/DROITE ---
+        let touchstartX = 0;
+        let touchstartY = 0;
+        let touchendX = 0;
+        let touchendY = 0;
+
+        const zoneTactile = document.getElementById('zone-tactile-carnet');
+
+        zoneTactile.addEventListener('touchstart', function(event) {
+            // Éviter de bloquer le comportement naturel si on tape dans la zone de notes
+            if (event.target.id === 'zone-notes') return;
+            touchstartX = event.changedTouches[0].screenX;
+            touchstartY = event.changedTouches[0].screenY;
+        }, {passive: true});
+
+        zoneTactile.addEventListener('touchend', function(event) {
+            if (event.target.id === 'zone-notes') return;
+            touchendX = event.changedTouches[0].screenX;
+            touchendY = event.changedTouches[0].screenY;
+            analyserGeste();
+        }, {passive: true});
+
+        function analyserGeste() {
+            const distanceX = touchendX - touchstartX;
+            const distanceY = touchendY - touchstartY;
+
+            // On vérifie que le swipe est bien horizontal et pas un scroll vertical (seuil de 60px)
+            if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > 60) {
+                if (distanceX > 0) {
+                    // Swipe vers la droite -> Page précédente
+                    naviguerDate(-1);
+                } else {
+                    // Swipe vers la gauche -> Page suivante
+                    naviguerDate(1);
+                }
+            }
         }
 
         setMode(2);
